@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Jai Jawan Sidhi Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+  font-family: "Nirmala UI", Arial;
+  margin: 0;
+  background: #f5f5f5;
+}
+
+.header {
+  background: linear-gradient(90deg, #FF9933, white, #138808);
+  padding: 15px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.container {
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  margin: 10px;
+  border-radius: 12px;
+  display: inline-block;
+  width: 22%;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+canvas {
+  margin-top: 30px;
+  background: white;
+  padding: 10px;
+  border-radius: 12px;
+}
+
+@media(max-width: 768px){
+  .card { width: 100%; }
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+🇮🇳 Jai Jawan Sidhi – Grievance Dashboard
+</div>
+
+<div class="container">
+
+<!-- KPI Cards -->
+
+<div class="card">
+  <h3>Total Cases</h3>
+  <h2 id="totalCases">15</h2>
+</div>
+
+<div class="card">
+  <h3>Land Issues</h3>
+  <h2>8</h2>
+</div>
+
+<div class="card">
+  <h3>Pending</h3>
+  <h2>10</h2>
+</div>
+
+<div class="card">
+  <h3>Resolved</h3>
+  <h2>5</h2>
+</div>
+
+<!-- Charts -->
+
+<canvas id="forceChart"></canvas> <canvas id="problemChart"></canvas>
+
+</div>
+
+<script>
+
+// Force Data
+new Chart(document.getElementById("forceChart"), {
+  type: "pie",
+  data: {
+    labels: ["Army", "Navy"],
+    datasets: [{
+      data: [13, 2]
+    }]
+  }
+});
+
+// Problem Data
+new Chart(document.getElementById("problemChart"), {
+  type: "bar",
+  data: {
+    labels: ["Land Dispute", "Encroachment", "Fraud", "Way Dispute"],
+    datasets: [{
+      data: [8, 3, 2, 2]
+    }]
+  }
+});
+
+</script>
+
+</body>
+</html>
