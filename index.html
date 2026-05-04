@@ -21,49 +21,41 @@ body {
   font-weight: bold;
 }
 
-.subheader {
-  text-align:center;
-  margin-top:5px;
-  font-size:14px;
-}
-
 .container {
   padding: 20px;
+}
+
+.filters {
+  margin-bottom: 20px;
+}
+
+select {
+  padding: 8px;
+  margin-right: 10px;
 }
 
 .cards {
   display:flex;
   flex-wrap:wrap;
-  justify-content: space-between;
 }
 
 .card {
   background: white;
   padding: 15px;
   margin: 10px;
-  border-radius: 14px;
+  border-radius: 12px;
   flex:1;
   min-width:200px;
   text-align: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-
-.card h2 {
-  margin: 5px;
-  color:#333;
-}
-
-.section {
-  margin-top: 30px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
 }
 
 canvas {
   background:white;
-  padding:15px;
-  border-radius:14px;
-  margin-top:15px;
+  padding:10px;
+  border-radius:12px;
+  margin-top:20px;
 }
-
 </style>
 
 </head>
@@ -71,70 +63,112 @@ canvas {
 <body>
 
 <div class="header">
-🇮🇳 Jai Jawan Sidhi – Grievance Dashboard
-</div>
-
-<div class="subheader">
-District Administration Sidhi | Soldier Welfare Monitoring System
+🇮🇳 Jai Jawan Sidhi Dashboard
 </div>
 
 <div class="container">
 
+<div class="filters">
+<select id="tehsilFilter" onchange="updateDashboard()">
+<option value="All">All Tehsil</option>
+<option>Sidhi</option>
+<option>Majhauli</option>
+<option>Churhat</option>
+<option>Rampur Naikin</option>
+</select>
+
+<select id="problemFilter" onchange="updateDashboard()">
+<option value="All">All Problems</option>
+<option>Land Dispute</option>
+<option>Encroachment</option>
+<option>Fraud</option>
+<option>Way Dispute</option>
+</select>
+</div>
+
 <div class="cards">
 <div class="card">
 <h3>Total Cases</h3>
-<h2>15</h2>
-</div>
-
-<div class="card">
-<h3>Land Issues</h3>
-<h2>10</h2>
+<h2 id="total">0</h2>
 </div>
 
 <div class="card">
 <h3>Pending</h3>
-<h2>9</h2>
+<h2 id="pending">0</h2>
 </div>
 
 <div class="card">
 <h3>Resolved</h3>
-<h2>6</h2>
+<h2 id="resolved">0</h2>
 </div>
 </div>
 
-<div class="section">
-<h3>Force Distribution</h3>
-<canvas id="forceChart"></canvas>
-</div>
-
-<div class="section">
-<h3>Problem Type Analysis</h3>
-<canvas id="problemChart"></canvas>
-</div>
+<canvas id="forceChart"></canvas> <canvas id="problemChart"></canvas>
 
 </div>
 
 <script>
 
-new Chart(document.getElementById("forceChart"), {
+// Sample Data (future में Excel से connect कर सकते हैं)
+const data = [
+{force:"Army", tehsil:"Sidhi", problem:"Land Dispute", status:"Pending"},
+{force:"Army", tehsil:"Majhauli", problem:"Encroachment", status:"Resolved"},
+{force:"Navy", tehsil:"Churhat", problem:"Fraud", status:"Pending"},
+{force:"Army", tehsil:"Rampur Naikin", problem:"Way Dispute", status:"Pending"},
+{force:"Army", tehsil:"Sidhi", problem:"Land Dispute", status:"Resolved"},
+{force:"Army", tehsil:"Sidhi", problem:"Encroachment", status:"Pending"},
+];
+
+// Charts
+let forceChart = new Chart(document.getElementById("forceChart"), {
 type: "pie",
-data: {
-labels: ["Army", "Navy"],
-datasets: [{
-data: [13, 2]
-}]
-}
+data: { labels: [], datasets: [{ data: [] }] }
 });
 
-new Chart(document.getElementById("problemChart"), {
+let problemChart = new Chart(document.getElementById("problemChart"), {
 type: "bar",
-data: {
-labels: ["Land Dispute", "Encroachment", "Fraud", "Way Dispute"],
-datasets: [{
-data: [8, 3, 2, 2]
-}]
-}
+data: { labels: [], datasets: [{ data: [] }] }
 });
+
+function updateDashboard() {
+
+let tehsil = document.getElementById("tehsilFilter").value;
+let problem = document.getElementById("problemFilter").value;
+
+let filtered = data.filter(d =>
+(tehsil==="All" || d.tehsil===tehsil) &&
+(problem==="All" || d.problem===problem)
+);
+
+// KPIs
+document.getElementById("total").innerText = filtered.length;
+document.getElementById("pending").innerText = filtered.filter(d=>d.status==="Pending").length;
+document.getElementById("resolved").innerText = filtered.filter(d=>d.status==="Resolved").length;
+
+// Force count
+let forceCount = {};
+filtered.forEach(d=>{
+forceCount[d.force] = (forceCount[d.force] || 0) + 1;
+});
+
+// Problem count
+let problemCount = {};
+filtered.forEach(d=>{
+problemCount[d.problem] = (problemCount[d.problem] || 0) + 1;
+});
+
+// Update charts
+forceChart.data.labels = Object.keys(forceCount);
+forceChart.data.datasets[0].data = Object.values(forceCount);
+forceChart.update();
+
+problemChart.data.labels = Object.keys(problemCount);
+problemChart.data.datasets[0].data = Object.values(problemCount);
+problemChart.update();
+}
+
+// Initial load
+updateDashboard();
 
 </script>
 
